@@ -1,0 +1,10 @@
+{
+  "name": "slushify-accounting",
+  "version": "1.0.0",
+  "description": "Local shop accounting and inventory app with owner phone access",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {}
+}
