@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slushify Shop Menu</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; font-family: Arial, sans-serif; background: #f6fcff; color: #171b3f; }
+    header { padding: 28px; background: linear-gradient(135deg, #65f4ff, #b9fbff 55%, #fff); border-bottom: 8px solid #ff4fb8; }
+    .wrap { width: min(1160px, 100%); margin: 0 auto; padding: 22px; }
+    h1 { margin: 0; font-size: clamp(34px, 7vw, 76px); letter-spacing: -3px; color: #351574; }
+    .top { display: flex; justify-content: space-between; gap: 16px; align-items: center; flex-wrap: wrap; }
+    button { border: 0; border-radius: 14px; padding: 12px 16px; font-weight: 900; cursor: pointer; background: #351574; color: #fff; }
+    button.alt { background: #ff4fb8; }
+    .layout { display: grid; grid-template-columns: 360px 1fr; gap: 18px; margin-top: 18px; }
+    .card { background: #ffffff; border-radius: 28px; padding: 22px; box-shadow: 0 18px 50px rgba(53,21,116,0.12); border: 1px solid #dff7ff; }
+    label { display: block; font-weight: 800; margin-top: 12px; }
+    input, select, textarea { width: 100%; padding: 14px; border: 2px solid #dff7ff; border-radius: 14px; margin-top: 6px; font: inherit; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 14px; border-bottom: 1px solid #e4f4fb; text-align: left; }
+    th { color: #351574; text-transform: uppercase; letter-spacing: 1px; font-size: 12px; }
+    .finished { color: #d81565; font-weight: 900; }
+    .modal { display: none; position: fixed; inset: 0; background: rgba(8,11,36,0.74); place-items: center; padding: 20px; }
+    .modal.open { display: grid; }
+    .login { width: min(420px, 100%); background: #fff; padding: 24px; border-radius: 24px; }
+    @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap top">
+      <div>
+        <h1>Shop Menu Table</h1>
+        <p id="state">Shop login required on this PC</p>
+      </div>
+      <div>
+        <button onclick="openLogin()">Shop Login</button>
+        <button class="alt" onclick="logout()">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap layout">
+    <section class="card">
+      <h2 id="formTitle">Add Menu Item</h2>
+      <form onsubmit="event.preventDefault(); saveItem();">
+        <input type="hidden" id="itemId">
+        <label>Item name</label>
+        <input id="name" placeholder="Blue raspberry slush" required>
+        <label>Category</label>
+        <select id="category"><option>Slush</option><option>Smoothie</option><option>Add-on</option><option>Snack</option><option>Other</option></select>
+        <label>Number of items</label>
+        <input id="quantity" type="number" min="0" value="1" required>
+        <label>Price</label>
+        <input id="price" type="number" min="0" step="0.01" required>
+        <label>Notes</label>
+        <textarea id="notes" rows="3" placeholder="Optional shop notes"></textarea>
+        <button type="submit">Save Item</button>
+        <button class="alt" type="button" onclick="resetForm()">New Item</button>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2>Table of Contents</h2>
+      <table>
+        <thead><tr><th>Item name</th><th>Number of items</th><th>Price</th><th>Category</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <div class="modal" id="loginModal">
+    <form class="login" onsubmit="event.preventDefault(); login();">
+      <h2>Shop PC Login</h2>
+      <label>Shop ID</label>
+      <input id="loginId" value="shop1" required>
+      <label>Password</label>
+      <input id="loginPass" type="password" required>
+      <button type="submit">Login</button>
+    </form>
+  </div>
+
+  <script>
+    let token = localStorage.getItem('slushifyShopToken') || '';
+    let inventory = [];
+    const money = value => `$${(Number(value) || 0).toFixed(2)}`;
+    const auth = () => ({ 'X-Auth-Token': token });
+    function openLogin() { loginModal.classList.add('open'); }
+    function closeLogin() { loginModal.classList.remove('open'); }
+    function logout() { token = ''; localStorage.removeItem('slushifyShopToken'); window.location.href = '/'; }
+
+    async function login() {
+      const response = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: loginId.value, pass: loginPass.value }) });
+      const data = await response.json();
+      if (!data.success || data.role !== 'shop') return alert('Shop login failed');
+      token = data.token;
+      localStorage.setItem('slushifyShopToken', token);
+      closeLogin();
+      loadItems();
+    }
+
+    async function loadItems() {
+      if (!token) return openLogin();
+      const response = await fetch('/api/inventory', { headers: auth() });
+      if (response.status === 401) return logout();
+      inventory = await response.json();
+      state.textContent = `Logged in as shop PC. Last update ${new Date().toLocaleTimeString()}`;
+      rows.innerHTML = inventory.map(item => {
+        const qty = Number(item.quantity) || 0;
+        return `<tr><td>${item.name}</td><td>${qty}</td><td>${money(item.price)}</td><td>${item.category}</td><td>${qty <= 0 ? '<span class="finished">Finished</span>' : 'Available'}</td><td><button onclick="editItem('${item.id}')">Edit</button></td></tr>`;
+      }).join('') || '<tr><td colspan="6">No menu items yet</td></tr>';
+    }
+
+    async function saveItem() {
+      if (!token) return openLogin();
+      const payload = { name: name.value, category: category.value, quantity: Number(quantity.value), price: Number(price.value), notes: notes.value };
+      const id = itemId.value;
+      await fetch(id ? `/api/inventory/${id}` : '/api/inventory', {
+        method: id ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json', ...auth() },
+        body: JSON.stringify(payload)
+      });
+      resetForm();
+      loadItems();
+    }
+
+    function editItem(id) {
+      const item = inventory.find(entry => entry.id === id);
+      if (!item) return;
+      formTitle.textContent = 'Edit Menu Item';
+      itemId.value = item.id;
+      name.value = item.name;
+      category.value = item.category;
+      quantity.value = item.quantity;
+      price.value = item.price;
+      notes.value = item.notes || '';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function resetForm() {
+      formTitle.textContent = 'Add Menu Item';
+      itemId.value = '';
+      name.value = '';
+      category.value = 'Slush';
+      quantity.value = 1;
+      price.value = '';
+      notes.value = '';
+    }
+
+    setInterval(loadItems, 5000);
+    loadItems();
+  </script>
+</body>
+</html>

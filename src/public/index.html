@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slushify Accounting</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; font-family: Arial, sans-serif; background: #0b0c13; color: #fff; display: grid; place-items: center; }
+    .container { background: #11163d; padding: 30px; border-radius: 16px; text-align: center; width: 90%; max-width: 360px; border: 1px solid rgba(255,255,255,0.08); }
+    h1 { font-size: 28px; margin: 0 0 8px; }
+    p { color: #65f4ff; margin: 0 0 20px; }
+    .role { margin: 12px 0; }
+    .role label { display: block; margin: 4px 0; color: #aaa; }
+    .role select { padding: 8px; background: #080b24; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; }
+    .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; margin: 8px 0; background: #65f4ff; color: #0b0c13; }
+    .btn.secondary { background: #ff4fb8; color: #fff; }
+    .error { color: #ff7898; margin: 8px 0; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Slushify Accounting</h1>
+    <p>Select your role to log in.</p>
+    <div class="role">
+      <label>Role:</label>
+      <select id="roleSelect">
+        <option value="owner">Owner</option>
+        <option value="shop">Shop</option>
+      </select>
+    </div>
+    <div id="loginForm">
+      <label>Owner ID</label>
+      <input type="text" id="loginId" placeholder="owner1" required>
+      <label>Password</label>
+      <input type="password" id="loginPass" placeholder="slushify123" required>
+    </div>
+    <div id="error" class="error"></div>
+    <button class="btn" onclick="login()">Log In</button>
+    <small class="small">Credentials: Owner: owner1 / slushify123 | Shop: shop1 / shop123</small>
+  </div>
+  <script>
+    function login() {
+      const role = document.getElementById('roleSelect').value;
+      const id = document.getElementById('loginId').value;
+      const pass = document.getElementById('loginPass').value;
+      fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, pass })
+      })
+      .then(r => r.json())
+      .then(d => {
+        if (!d.success) { document.getElementById('error').textContent = 'Invalid credentials'; return; }
+        localStorage.setItem('slushify' + role.charAt(0).toUpperCase() + role.slice(1) + 'Token', d.token);
+        if (role === 'owner') window.location.href = '/owner.html';
+        else window.location.href = '/shop.html';
+      });
+    }
+  </script>
+</body>
+</html>
