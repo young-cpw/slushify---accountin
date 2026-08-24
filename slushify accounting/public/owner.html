@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slushify Owner Dashboard</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; font-family: Arial, sans-serif; background: #080b24; color: #ffffff; }
+    header { padding: 28px; background: linear-gradient(135deg, #080b24, #351574 55%, #ff4fb8); }
+    .wrap { width: min(1180px, 100%); margin: 0 auto; padding: 22px; }
+    h1 { margin: 0; font-size: clamp(32px, 6vw, 70px); letter-spacing: -3px; }
+    .top { display: flex; justify-content: space-between; gap: 16px; align-items: center; flex-wrap: wrap; }
+    .pill { padding: 10px 14px; border-radius: 999px; background: rgba(101,244,255,0.16); color: #65f4ff; border: 1px solid rgba(101,244,255,0.35); }
+    button { border: 0; border-radius: 14px; padding: 12px 16px; font-weight: 800; cursor: pointer; background: #65f4ff; color: #080b24; }
+    button.dark { background: #1c214f; color: #ffffff; }
+    button.danger { background: #ff4f7b; color: #ffffff; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin: 20px 0; }
+    .card { border-radius: 26px; padding: 22px; background: #11163d; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 20px 60px rgba(0,0,0,0.22); }
+    .metric { font-size: 38px; font-weight: 900; margin-top: 10px; color: #65f4ff; }
+    .panel { display: grid; grid-template-columns: 1.2fr .8fr; gap: 16px; }
+    table { width: 100%; border-collapse: collapse; overflow: hidden; border-radius: 18px; }
+    th, td { padding: 14px; border-bottom: 1px solid rgba(255,255,255,0.08); text-align: left; }
+    th { color: #65f4ff; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; }
+    .notice { display: grid; gap: 10px; }
+    .notice article { padding: 14px; border-radius: 16px; background: rgba(255,79,184,0.14); border: 1px solid rgba(255,79,184,0.28); }
+    .finished { color: #ff7898; font-weight: 900; }
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.72); place-items: center; padding: 20px; }
+    .modal.open { display: grid; }
+    .login { width: min(420px, 100%); background: #11163d; padding: 24px; border-radius: 24px; }
+    input { width: 100%; padding: 14px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.12); background: #080b24; color: #fff; margin: 8px 0 14px; }
+    @media (max-width: 820px) { .panel { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap top">
+      <div>
+        <div class="pill">Owner side</div>
+        <h1>Slushify Live Control</h1>
+        <p id="state">Login required</p>
+      </div>
+      <div>
+        <button onclick="openLogin()">Owner Login</button>
+        <button class="dark" onclick="logout()">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="grid">
+      <div class="card"><span>Total Items</span><div class="metric" id="inventoryCount">0</div></div>
+      <div class="card"><span>Inventory Value</span><div class="metric" id="inventoryValue">$0.00</div></div>
+      <div class="card"><span>Finished Items</span><div class="metric" id="finishedItems">0</div></div>
+      <div class="card"><span>Unread Alerts</span><div class="metric" id="unreadNotifications">0</div></div>
+    </section>
+
+    <section class="panel">
+      <div class="card">
+        <h2>Live Menu / Inventory</h2>
+        <table>
+          <thead><tr><th>Item name</th><th>Category</th><th>Number of items</th><th>Price</th><th>Total</th><th>Status</th></tr></thead>
+          <tbody id="inventoryRows"></tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="top"><h2>Owner Notifications</h2><button class="dark" onclick="markRead()">Mark read</button></div>
+        <div class="notice" id="notifications"></div>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal" id="loginModal">
+    <form class="login" onsubmit="event.preventDefault(); login();">
+      <h2>Owner Login</h2>
+      <label>Owner ID</label>
+      <input id="loginId" value="owner1" required>
+      <label>Password</label>
+      <input id="loginPass" type="password" required>
+      <button type="submit">Login</button>
+    </form>
+  </div>
+
+  <script>
+    let token = localStorage.getItem('slushifyOwnerToken') || '';
+    let lastUnread = 0;
+    const money = value => `$${(Number(value) || 0).toFixed(2)}`;
+    const auth = () => ({ 'X-Auth-Token': token });
+    function openLogin() { document.getElementById('loginModal').classList.add('open'); }
+    function closeLogin() { document.getElementById('loginModal').classList.remove('open'); }
+    function logout() { token = ''; localStorage.removeItem('slushifyOwnerToken'); window.location.href = '/'; }
+
+    async function login() {
+      const response = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: loginId.value, pass: loginPass.value }) });
+      const data = await response.json();
+      if (!data.success || data.role !== 'owner') return alert('Owner login failed');
+      token = data.token;
+      localStorage.setItem('slushifyOwnerToken', token);
+      closeLogin();
+      loadData();
+    }
+
+    async function loadData() {
+      if (!token) return openLogin();
+      const statusResponse = await fetch('/api/status', { headers: auth() });
+      if (statusResponse.status === 401) return logout();
+      const status = await statusResponse.json();
+      inventoryCount.textContent = status.inventoryCount;
+      inventoryValue.textContent = money(status.inventoryValue);
+      finishedItems.textContent = status.finishedItems;
+      unreadNotifications.textContent = status.unreadNotifications;
+      state.textContent = `Live as owner. Last update ${new Date().toLocaleTimeString()}`;
+
+      const inventory = await (await fetch('/api/inventory', { headers: auth() })).json();
+      inventoryRows.innerHTML = inventory.map(item => {
+        const qty = Number(item.quantity) || 0;
+        return `<tr><td>${item.name}</td><td>${item.category}</td><td>${qty}</td><td>${money(item.price)}</td><td>${money(qty * item.price)}</td><td>${qty <= 0 ? '<span class="finished">Finished</span>' : 'Available'}</td></tr>`;
+      }).join('') || '<tr><td colspan="6">No items yet</td></tr>';
+
+      const alerts = await (await fetch('/api/notifications', { headers: auth() })).json();
+      notifications.innerHTML = alerts.slice(0, 12).map(alert => `<article><strong>${alert.read ? '' : 'NEW '} ${alert.type}</strong><p>${alert.message}</p><small>${new Date(alert.createdAt).toLocaleString()}</small></article>`).join('') || '<p>No notifications yet</p>';
+
+      if (status.unreadNotifications > lastUnread && lastUnread !== 0) {
+        if ('Notification' in window && Notification.permission === 'granted') new Notification('Slushify alert', { body: 'New inventory notification' });
+      }
+      lastUnread = status.unreadNotifications;
+    }
+
+    async function markRead() {
+      await fetch('/api/notifications/read', { method: 'PATCH', headers: auth() });
+      loadData();
+    }
+
+    if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
+    setInterval(loadData, 4000);
+    loadData();
+  </script>
+</body>
+</html>
