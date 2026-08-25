@@ -87,7 +87,7 @@
 
   <main class="wrap layout">
     <section class="card">
-      <h2 id="formTitle">âž• Add Menu Item</h2>
+      <h2 id="formTitle">Add Menu Item</h2>
       <form onsubmit="event.preventDefault(); saveItem();">
         <input type="hidden" id="itemId">
         <label>Item name</label>
@@ -115,7 +115,7 @@
     </section>
 
     <section class="card">
-      <h2>ðŸ“‹ Table of Contents</h2>
+      <h2>Table of Contents</h2>
       <table>
         <thead><tr><th>Item name</th><th>Qty</th><th>Price</th><th>Category</th><th>Status</th><th>Action</th></tr></thead>
         <tbody id="rows"></tbody>
@@ -125,7 +125,7 @@
 
   <div class="modal" id="loginModal">
     <form class="login" onsubmit="event.preventDefault(); login();">
-      <h2>ðŸª Shop Login</h2>
+      <h2>Shop Login</h2>
       <p class="sub">For the shop PC only</p>
       <label>Shop ID</label>
       <input id="loginId" value="shop1" required>
@@ -182,7 +182,7 @@
     function editItem(id) {
       const item = inventory.find(entry => entry.id === id);
       if (!item) return;
-      formTitle.textContent = 'âœï¸ Edit Menu Item';
+      formTitle.textContent = ' Edit Menu Item';
       itemId.value = item.id;
       name.value = item.name;
       category.value = item.category;
@@ -199,7 +199,7 @@
     }
 
     function resetForm() {
-      formTitle.textContent = 'âž• Add Menu Item';
+      formTitle.textContent = 'Add Menu Item';
       itemId.value = '';
       name.value = '';
       category.value = '';
