@@ -17,7 +17,6 @@
       overflow-x: hidden;
       position: relative;
     }
-    /* animated 3D background orbs */
     .orb { position: fixed; border-radius: 50%; filter: blur(90px); opacity: .55; animation: float 12s ease-in-out infinite; pointer-events: none; }
     .orb1 { width: 420px; height: 420px; background: #5b1fa6; top: -120px; left: -100px; }
     .orb2 { width: 360px; height: 360px; background: #ff4fb8; bottom: -120px; right: -80px; animation-delay: -4s; }
@@ -56,10 +55,12 @@
     .card3d.owner .inner { background: linear-gradient(160deg, #0d2b3d, #06121e 70%); }
     .card3d.shop  .inner { background: linear-gradient(160deg, #3d0d2b, #1e0612 70%); }
     .icon3d {
-      width: 78px; height: 78px; margin: 0 auto; border-radius: 22px; display: grid; place-items: center; font-size: 38px;
+      width: 78px; height: 78px; margin: 0 auto; border-radius: 22px; display: grid; place-items: center;
       background: linear-gradient(145deg, #65f4ff, #0891b2); box-shadow: 0 18px 34px -8px rgba(101,244,255,.55), inset 0 2px 6px rgba(255,255,255,.5);
     }
+    .icon3d svg { width: 42px; height: 42px; fill: #04121c; }
     .card3d.shop .icon3d { background: linear-gradient(145deg, #ff4fb8, #be185d); box-shadow: 0 18px 34px -8px rgba(255,79,184,.55), inset 0 2px 6px rgba(255,255,255,.4); }
+    .card3d.shop .icon3d svg { fill: #fff; }
     .card3d h2 { font-size: 26px; letter-spacing: -.5px; }
     .card3d.owner h2 { color: #65f4ff; }
     .card3d.shop h2 { color: #ff9ad2; }
@@ -79,18 +80,22 @@
     <section class="cards">
       <a class="card3d owner" href="/owner.html">
         <div class="inner">
-          <div class="icon3d">ðŸ‘‘</div>
+          <div class="icon3d">
+            <svg viewBox="0 0 24 24"><path d="M3 18h18v2H3v-2zM2 7l5 4.5L12 4l5 7.5L22 7v9H2V7zm2 2.6V14h16V9.6l-3.4 3L12 6.9 7.4 12.6 4 9.6z"/></svg>
+          </div>
           <h2>Owner</h2>
-          <p>Live dashboard, inventory value, alerts &amp; notifications</p>
-          <span class="go">ENTER â†’</span>
+          <p>Live dashboard, inventory value, alerts and notifications</p>
+          <span class="go">ENTER &raquo;</span>
         </div>
       </a>
       <a class="card3d shop" href="/shop.html">
         <div class="inner">
-          <div class="icon3d">ðŸª</div>
+          <div class="icon3d">
+            <svg viewBox="0 0 24 24"><path d="M20 4H4v2h16V4zm1.5 6h-19l-1 5c0 1.1.9 2 2 2H5v5h4v-5h6v5h4v-5h.5c1.1 0 2-.9 2-2l-1-5zM7 20v-5h2v5H7zm8 0v-5h2v5h-2z"/></svg>
+          </div>
           <h2>Shop</h2>
-          <p>Menu table â€” add, edit &amp; remove items</p>
-          <span class="go">ENTER â†’</span>
+          <p>Menu table - add, edit and remove items</p>
+          <span class="go">ENTER &raquo;</span>
         </div>
       </a>
     </section>
