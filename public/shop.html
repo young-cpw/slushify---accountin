@@ -5,36 +5,80 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Slushify Shop Menu</title>
   <style>
-    * { box-sizing: border-box; }
-    body { margin: 0; min-height: 100vh; font-family: Arial, sans-serif; background: #f6fcff; color: #171b3f; }
-    header { padding: 28px; background: linear-gradient(135deg, #65f4ff, #b9fbff 55%, #fff); border-bottom: 8px solid #ff4fb8; }
-    .wrap { width: min(1160px, 100%); margin: 0 auto; padding: 22px; }
-    h1 { margin: 0; font-size: clamp(34px, 7vw, 76px); letter-spacing: -3px; color: #351574; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { min-height: 100vh; font-family: 'Segoe UI', Arial, sans-serif; background: #eef6fc; color: #171b3f; overflow-x: hidden; }
+    .orb { position: fixed; border-radius: 50%; filter: blur(90px); opacity: .35; animation: float 14s ease-in-out infinite; pointer-events: none; }
+    .orb1 { width: 420px; height: 420px; background: #65f4ff; top: -140px; left: -100px; }
+    .orb2 { width: 360px; height: 360px; background: #ff4fb8; bottom: -140px; right: -100px; animation-delay: -7s; }
+    @keyframes float { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(30px,30px) scale(1.1); } }
+
+    header {
+      position: relative; z-index: 2; padding: 30px 24px; color: #fff;
+      background: linear-gradient(120deg, #0e7490, #5b1fa6 60%, #be185d);
+      border-bottom: none; box-shadow: 0 24px 60px -20px rgba(91,31,166,.6);
+    }
+    .wrap { width: min(1180px, 100%); margin: 0 auto; padding: 0 6px; }
     .top { display: flex; justify-content: space-between; gap: 16px; align-items: center; flex-wrap: wrap; }
-    button { border: 0; border-radius: 14px; padding: 12px 16px; font-weight: 900; cursor: pointer; background: #351574; color: #fff; }
-    button.alt { background: #ff4fb8; }
-    .layout { display: grid; grid-template-columns: 360px 1fr; gap: 18px; margin-top: 18px; }
-    .card { background: #ffffff; border-radius: 28px; padding: 22px; box-shadow: 0 18px 50px rgba(53,21,116,0.12); border: 1px solid #dff7ff; }
-    label { display: block; font-weight: 800; margin-top: 12px; }
-    input, select, textarea { width: 100%; padding: 14px; border: 2px solid #dff7ff; border-radius: 14px; margin-top: 6px; font: inherit; }
+    .pill { display: inline-block; padding: 7px 16px; border-radius: 999px; font-size: 12px; font-weight: 800; letter-spacing: 2px;
+      background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.3); }
+    h1 { margin: 10px 0 6px; font-size: clamp(30px, 5vw, 54px); letter-spacing: -2px; color: #fff; text-shadow: 0 10px 30px rgba(0,0,0,.3); }
+    #state { color: rgba(255,255,255,.75); font-size: 14px; }
+
+    main { position: relative; z-index: 2; width: min(1180px, 100%); margin: -30px auto 60px; padding: 0 6px; perspective: 1400px; }
+
+    button { border: 0; border-radius: 16px; padding: 13px 22px; font-weight: 800; cursor: pointer; font-size: 14px;
+      background: linear-gradient(145deg, #5b1fa6, #7c3aed); color: #fff;
+      box-shadow: 0 14px 28px -10px rgba(91,31,166,.55), inset 0 2px 4px rgba(255,255,255,.25); transition: transform .15s ease, box-shadow .15s ease; }
+    button:hover { transform: translateY(-3px); box-shadow: 0 20px 34px -10px rgba(91,31,166,.65); }
+    button:active { transform: translateY(0); }
+    button.alt { background: linear-gradient(145deg, #ff4fb8, #be185d); box-shadow: 0 14px 28px -10px rgba(255,79,184,.5), inset 0 2px 4px rgba(255,255,255,.3); }
+    button.mini { padding: 9px 16px; font-size: 12px; border-radius: 12px; }
+    button.del { background: linear-gradient(145deg, #f43f5e, #be123c); box-shadow: 0 12px 24px -10px rgba(244,63,94,.5); }
+
+    .layout { display: grid; grid-template-columns: 380px 1fr; gap: 22px; align-items: start; }
+    .card {
+      border-radius: 28px; padding: 26px; position: relative; transform-style: preserve-3d; transition: transform .2s ease;
+      background: rgba(255,255,255,.82); backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,.9);
+      box-shadow: 0 30px 60px -20px rgba(23,27,63,.25), inset 0 1px 0 rgba(255,255,255,1);
+    }
+    .card h2 { font-size: 19px; margin-bottom: 16px; color: #171b3f; letter-spacing: -.3px; }
+    label { display: block; font-size: 12px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; color: #64748b; margin-top: 14px; }
+    input, select, textarea { width: 100%; padding: 13px 15px; border: 2px solid #e2edf5; border-radius: 14px; margin-top: 7px; font: inherit; font-size: 15px; background: #fff; outline: none; transition: border .15s ease, box-shadow .15s ease; }
+    input:focus, textarea:focus { border-color: #7c3aed; box-shadow: 0 0 0 4px rgba(124,58,237,.12); }
+    textarea { resize: vertical; }
+    .btnrow { display: flex; gap: 10px; margin-top: 20px; }
+    .btnrow button { flex: 1; }
+
     table { width: 100%; border-collapse: collapse; }
-    th, td { padding: 14px; border-bottom: 1px solid #e4f4fb; text-align: left; }
-    th { color: #351574; text-transform: uppercase; letter-spacing: 1px; font-size: 12px; }
-    .finished { color: #d81565; font-weight: 900; }
-    .modal { display: none; position: fixed; inset: 0; background: rgba(8,11,36,0.74); place-items: center; padding: 20px; }
+    th, td { padding: 13px 12px; border-bottom: 1px solid #eef3f9; text-align: left; font-size: 14px; }
+    th { color: #5b1fa6; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; }
+    tbody tr { transition: background .15s ease; }
+    tbody tr:hover { background: rgba(124,58,237,.05); }
+    .finished { color: #e11d48; font-weight: 900; }
+    .avail { color: #059669; font-weight: 700; }
+    .actions { display: flex; gap: 8px; }
+
+    .modal { display: none; position: fixed; inset: 0; background: rgba(14,10,40,.7); backdrop-filter: blur(8px); place-items: center; padding: 20px; z-index: 50; }
     .modal.open { display: grid; }
-    .login { width: min(420px, 100%); background: #fff; padding: 24px; border-radius: 24px; }
-    @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } }
+    .login { width: min(420px, 100%); padding: 32px; border-radius: 28px; background: #fff;
+      box-shadow: 0 40px 90px -20px rgba(14,10,40,.5); }
+    .login h2 { margin-bottom: 6px; }
+    .login .sub { color: #64748b; font-size: 14px; margin-bottom: 10px; }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
+  <div class="orb orb1"></div><div class="orb orb2"></div>
+
   <header>
     <div class="wrap top">
       <div>
-        <h1>Shop Menu Table</h1>
+        <span class="pill">SHOP SIDE</span>
+        <h1>Menu Manager</h1>
         <p id="state">Shop login required on this PC</p>
       </div>
-      <div>
+      <div style="display:flex; gap:10px;">
         <button onclick="openLogin()">Shop Login</button>
         <button class="alt" onclick="logout()">Logout</button>
       </div>
@@ -43,28 +87,37 @@
 
   <main class="wrap layout">
     <section class="card">
-      <h2 id="formTitle">Add Menu Item</h2>
+      <h2 id="formTitle">âž• Add Menu Item</h2>
       <form onsubmit="event.preventDefault(); saveItem();">
         <input type="hidden" id="itemId">
         <label>Item name</label>
         <input id="name" placeholder="Blue raspberry slush" required>
-        <label>Category</label>
-        <select id="category"><option>Slush</option><option>Smoothie</option><option>Add-on</option><option>Snack</option><option>Other</option></select>
+        <label>Category (type your own)</label>
+        <input id="category" list="categoryOptions" placeholder="Type category e.g. Slush" autocomplete="off" required>
+        <datalist id="categoryOptions">
+          <option value="Slush"></option>
+          <option value="Smoothie"></option>
+          <option value="Add-on"></option>
+          <option value="Snack"></option>
+          <option value="Other"></option>
+        </datalist>
         <label>Number of items</label>
         <input id="quantity" type="number" min="0" value="1" required>
         <label>Price</label>
         <input id="price" type="number" min="0" step="0.01" required>
         <label>Notes</label>
         <textarea id="notes" rows="3" placeholder="Optional shop notes"></textarea>
-        <button type="submit">Save Item</button>
-        <button class="alt" type="button" onclick="resetForm()">New Item</button>
+        <div class="btnrow">
+          <button type="submit">Save Item</button>
+          <button class="alt" type="button" onclick="resetForm()">New Item</button>
+        </div>
       </form>
     </section>
 
     <section class="card">
-      <h2>Table of Contents</h2>
+      <h2>ðŸ“‹ Table of Contents</h2>
       <table>
-        <thead><tr><th>Item name</th><th>Number of items</th><th>Price</th><th>Category</th><th>Status</th><th>Action</th></tr></thead>
+        <thead><tr><th>Item name</th><th>Qty</th><th>Price</th><th>Category</th><th>Status</th><th>Action</th></tr></thead>
         <tbody id="rows"></tbody>
       </table>
     </section>
@@ -72,12 +125,13 @@
 
   <div class="modal" id="loginModal">
     <form class="login" onsubmit="event.preventDefault(); login();">
-      <h2>Shop PC Login</h2>
+      <h2>ðŸª Shop Login</h2>
+      <p class="sub">For the shop PC only</p>
       <label>Shop ID</label>
       <input id="loginId" value="shop1" required>
       <label>Password</label>
       <input id="loginPass" type="password" required>
-      <button type="submit">Login</button>
+      <button type="submit" style="width:100%;">Login</button>
     </form>
   </div>
 
@@ -108,7 +162,7 @@
       state.textContent = `Logged in as shop PC. Last update ${new Date().toLocaleTimeString()}`;
       rows.innerHTML = inventory.map(item => {
         const qty = Number(item.quantity) || 0;
-        return `<tr><td>${item.name}</td><td>${qty}</td><td>${money(item.price)}</td><td>${item.category}</td><td>${qty <= 0 ? '<span class="finished">Finished</span>' : 'Available'}</td><td><button onclick="editItem('${item.id}')">Edit</button></td></tr>`;
+        return `<tr><td>${item.name}</td><td>${qty}</td><td>${money(item.price)}</td><td>${item.category}</td><td>${qty <= 0 ? '<span class="finished">Finished</span>' : '<span class="avail">Available</span>'}</td><td><div class="actions"><button class="mini" onclick="editItem('${item.id}')">Edit</button><button class="mini del" onclick="deleteItem('${item.id}')">Delete</button></div></td></tr>`;
       }).join('') || '<tr><td colspan="6">No menu items yet</td></tr>';
     }
 
@@ -128,7 +182,7 @@
     function editItem(id) {
       const item = inventory.find(entry => entry.id === id);
       if (!item) return;
-      formTitle.textContent = 'Edit Menu Item';
+      formTitle.textContent = 'âœï¸ Edit Menu Item';
       itemId.value = item.id;
       name.value = item.name;
       category.value = item.category;
@@ -138,11 +192,17 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    function deleteItem(id) {
+      if (!confirm('Delete this item from the menu?')) return;
+      fetch(`/api/inventory/${id}`, { method: 'DELETE', headers: { 'X-Auth-Token': token } });
+      loadItems();
+    }
+
     function resetForm() {
-      formTitle.textContent = 'Add Menu Item';
+      formTitle.textContent = 'âž• Add Menu Item';
       itemId.value = '';
       name.value = '';
-      category.value = 'Slush';
+      category.value = '';
       quantity.value = 1;
       price.value = '';
       notes.value = '';
