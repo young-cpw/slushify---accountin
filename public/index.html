@@ -5,58 +5,95 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Slushify Accounting</title>
   <style>
-    * { box-sizing: border-box; }
-    body { margin: 0; min-height: 100vh; font-family: Arial, sans-serif; background: #0b0c13; color: #fff; display: grid; place-items: center; }
-    .container { background: #11163d; padding: 30px; border-radius: 16px; text-align: center; width: 90%; max-width: 360px; border: 1px solid rgba(255,255,255,0.08); }
-    h1 { font-size: 28px; margin: 0 0 8px; }
-    p { color: #65f4ff; margin: 0 0 20px; }
-    .role { margin: 12px 0; }
-    .role label { display: block; margin: 4px 0; color: #aaa; }
-    .role select { padding: 8px; background: #080b24; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; }
-    .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; margin: 8px 0; background: #65f4ff; color: #0b0c13; }
-    .btn.secondary { background: #ff4fb8; color: #fff; }
-    .error { color: #ff7898; margin: 8px 0; font-size: 12px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      color: #fff;
+      background: #0a0e27;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      overflow-x: hidden;
+      position: relative;
+    }
+    /* animated 3D background orbs */
+    .orb { position: fixed; border-radius: 50%; filter: blur(90px); opacity: .55; animation: float 12s ease-in-out infinite; pointer-events: none; }
+    .orb1 { width: 420px; height: 420px; background: #5b1fa6; top: -120px; left: -100px; }
+    .orb2 { width: 360px; height: 360px; background: #ff4fb8; bottom: -120px; right: -80px; animation-delay: -4s; }
+    .orb3 { width: 300px; height: 300px; background: #0e7490; top: 40%; left: 60%; animation-delay: -8s; }
+    @keyframes float { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(30px,-40px) scale(1.12); } }
+
+    main { width: min(940px, 100%); display: grid; gap: 34px; position: relative; z-index: 2; perspective: 1200px; }
+    .hero { text-align: center; }
+    .badge {
+      display: inline-block; padding: 8px 18px; border-radius: 999px; font-size: 13px; font-weight: 700; letter-spacing: 2px;
+      background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.18); backdrop-filter: blur(10px); margin-bottom: 18px;
+    }
+    h1 {
+      font-size: clamp(44px, 9vw, 88px); letter-spacing: -4px; line-height: .95; margin-bottom: 14px;
+      background: linear-gradient(120deg, #65f4ff 10%, #ffffff 45%, #ff4fb8 90%);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+      text-shadow: 0 20px 60px rgba(101,244,255,.25);
+    }
+    .hero p { color: #b8c4e8; font-size: 18px; }
+
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 26px; }
+    .card3d {
+      position: relative; display: block; text-decoration: none; border-radius: 28px; padding: 2px;
+      background: linear-gradient(145deg, rgba(255,255,255,.35), rgba(255,255,255,.05));
+      transform-style: preserve-3d; transition: transform .25s ease, box-shadow .25s ease;
+      box-shadow: 0 30px 60px -18px rgba(0,0,0,.65);
+      animation: rise .8s ease both;
+    }
+    .card3d:nth-child(2) { animation-delay: .15s; }
+    @keyframes rise { from { opacity: 0; transform: translateY(40px) rotateX(12deg); } to { opacity: 1; transform: none; } }
+    .card3d:hover { transform: translateY(-10px) rotateX(6deg) rotateY(-6deg) scale(1.02); }
+    .card3d .inner {
+      border-radius: 26px; padding: 34px 26px; min-height: 230px; display: grid; align-content: center; gap: 12px; text-align: center;
+      transform: translateZ(40px);
+    }
+    .card3d.owner .inner { background: linear-gradient(160deg, #0d2b3d, #06121e 70%); }
+    .card3d.shop  .inner { background: linear-gradient(160deg, #3d0d2b, #1e0612 70%); }
+    .icon3d {
+      width: 78px; height: 78px; margin: 0 auto; border-radius: 22px; display: grid; place-items: center; font-size: 38px;
+      background: linear-gradient(145deg, #65f4ff, #0891b2); box-shadow: 0 18px 34px -8px rgba(101,244,255,.55), inset 0 2px 6px rgba(255,255,255,.5);
+    }
+    .card3d.shop .icon3d { background: linear-gradient(145deg, #ff4fb8, #be185d); box-shadow: 0 18px 34px -8px rgba(255,79,184,.55), inset 0 2px 6px rgba(255,255,255,.4); }
+    .card3d h2 { font-size: 26px; letter-spacing: -.5px; }
+    .card3d.owner h2 { color: #65f4ff; }
+    .card3d.shop h2 { color: #ff9ad2; }
+    .card3d p { color: #9fb0d8; font-size: 14px; line-height: 1.5; }
+    .go { margin-top: 6px; font-size: 13px; font-weight: 800; letter-spacing: 2px; color: #fff; opacity: .8; }
+    .card3d:hover .go { opacity: 1; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Slushify Accounting</h1>
-    <p>Select your role to log in.</p>
-    <div class="role">
-      <label>Role:</label>
-      <select id="roleSelect">
-        <option value="owner">Owner</option>
-        <option value="shop">Shop</option>
-      </select>
-    </div>
-    <div id="loginForm">
-      <label>Owner ID</label>
-      <input type="text" id="loginId" placeholder="owner1" required>
-      <label>Password</label>
-      <input type="password" id="loginPass" placeholder="slushify123" required>
-    </div>
-    <div id="error" class="error"></div>
-    <button class="btn" onclick="login()">Log In</button>
-    <small class="small">Credentials: Owner: owner1 / slushify123 | Shop: shop1 / shop123</small>
-  </div>
-  <script>
-    function login() {
-      const role = document.getElementById('roleSelect').value;
-      const id = document.getElementById('loginId').value;
-      const pass = document.getElementById('loginPass').value;
-      fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, pass })
-      })
-      .then(r => r.json())
-      .then(d => {
-        if (!d.success) { document.getElementById('error').textContent = 'Invalid credentials'; return; }
-        localStorage.setItem('slushify' + role.charAt(0).toUpperCase() + role.slice(1) + 'Token', d.token);
-        if (role === 'owner') window.location.href = '/owner.html';
-        else window.location.href = '/shop.html';
-      });
-    }
-  </script>
+  <div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div>
+  <main>
+    <section class="hero">
+      <span class="badge">SLUSHIFY</span>
+      <h1>Accounting</h1>
+      <p>Choose your side to continue</p>
+    </section>
+    <section class="cards">
+      <a class="card3d owner" href="/owner.html">
+        <div class="inner">
+          <div class="icon3d">ðŸ‘‘</div>
+          <h2>Owner</h2>
+          <p>Live dashboard, inventory value, alerts &amp; notifications</p>
+          <span class="go">ENTER â†’</span>
+        </div>
+      </a>
+      <a class="card3d shop" href="/shop.html">
+        <div class="inner">
+          <div class="icon3d">ðŸª</div>
+          <h2>Shop</h2>
+          <p>Menu table â€” add, edit &amp; remove items</p>
+          <span class="go">ENTER â†’</span>
+        </div>
+      </a>
+    </section>
+  </main>
 </body>
 </html>
