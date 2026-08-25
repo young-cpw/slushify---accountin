@@ -158,9 +158,14 @@ async function handleAPI(req, res, url) {
   if (url.pathname === '/api/inventory' && req.method === 'POST') {
     const user = requireRole(req, res, ['owner', 'shop']);
     if (!user) return;
+    const body = await readBody(req);
+    if (!String(body.name || '').trim()) {
+      sendJSON(res, 400, { error: 'Item name is required' });
+      return;
+    }
     const inventory = loadJSON(INVENTORY_FILE, []);
     const item = {
-      ...normalizeItem(await readBody(req)),
+      ...normalizeItem(body),
       id: Date.now().toString(),
       createdBy: user.role,
       createdAt: new Date().toISOString(),
@@ -187,8 +192,13 @@ async function handleAPI(req, res, url) {
       return;
     }
     const previous = inventory[index];
+    const body = await readBody(req);
+    if (body.name !== undefined && !String(body.name || '').trim()) {
+      sendJSON(res, 400, { error: 'Item name cannot be empty' });
+      return;
+    }
     const updated = {
-      ...normalizeItem(await readBody(req), previous),
+      ...normalizeItem(body, previous),
       id: previous.id,
       createdBy: previous.createdBy,
       createdAt: previous.createdAt,
@@ -205,9 +215,14 @@ async function handleAPI(req, res, url) {
   }
 
   if (inventoryMatch && req.method === 'DELETE') {
-    if (!requireRole(req, res, ['owner'])) return;
+    const user = requireRole(req, res, ['owner', 'shop']);
+    if (!user) return;
     const inventory = loadJSON(INVENTORY_FILE, []);
+    const deleted = inventory.find(item => item.id === inventoryMatch[1]);
     saveJSON(INVENTORY_FILE, inventory.filter(item => item.id !== inventoryMatch[1]));
+    if (deleted) {
+      addNotification('item-deleted', `${deleted.name} was removed from the menu.`, deleted);
+    }
     sendJSON(res, 200, { success: true });
     return;
   }
@@ -220,8 +235,7 @@ async function handleAPI(req, res, url) {
 
   if (url.pathname === '/api/notifications/read' && req.method === 'PATCH') {
     if (!requireRole(req, res, ['owner'])) return;
-    const notifications = loadJSON(NOTIFICATIONS_FILE, []).map(notification => ({ ...notification, read: true }));
-    saveJSON(NOTIFICATIONS_FILE, notifications);
+    saveJSON(NOTIFICATIONS_FILE, []);
     sendJSON(res, 200, { success: true });
     return;
   }
