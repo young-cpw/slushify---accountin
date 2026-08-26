@@ -86,7 +86,7 @@ function readBody(req) {
 }
 
 function money(value) {
-  return `$${(Number(value) || 0).toFixed(2)}`;
+  return `GHS ${(Number(value) || 0).toFixed(2)}`;
 }
 
 function addNotification(type, message, item) {
