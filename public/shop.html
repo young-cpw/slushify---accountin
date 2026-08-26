@@ -3,211 +3,770 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Slushify Shop Menu</title>
+  <title>Slushify Accounting - Shop Menu & Catalog Manager</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --card-border: #e2e8f0;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-dim: #94a3b8;
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --primary-light: #eef2ff;
+      --primary-glow: rgba(79, 70, 229, 0.15);
+      --success: #10b981;
+      --success-bg: #ecfdf5;
+      --danger: #ef4444;
+      --danger-bg: #fef2f2;
+      --warning: #f59e0b;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { min-height: 100vh; font-family: 'Segoe UI', Arial, sans-serif; background: #eef6fc; color: #171b3f; overflow-x: hidden; }
-    .orb { position: fixed; border-radius: 50%; filter: blur(90px); opacity: .35; animation: float 14s ease-in-out infinite; pointer-events: none; }
-    .orb1 { width: 420px; height: 420px; background: #65f4ff; top: -140px; left: -100px; }
-    .orb2 { width: 360px; height: 360px; background: #ff4fb8; bottom: -140px; right: -100px; animation-delay: -7s; }
-    @keyframes float { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(30px,30px) scale(1.1); } }
+    body {
+      min-height: 100vh;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      overflow-x: hidden;
+    }
 
+    /* Header Nav */
     header {
-      position: relative; z-index: 2; padding: 30px 24px; color: #fff;
-      background: linear-gradient(120deg, #0e7490, #5b1fa6 60%, #be185d);
-      border-bottom: none; box-shadow: 0 24px 60px -20px rgba(91,31,166,.6);
+      background: #ffffff;
+      border-bottom: 1px solid var(--card-border);
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      box-shadow: var(--shadow-sm);
+      padding: 16px 28px;
     }
-    .wrap { width: min(1180px, 100%); margin: 0 auto; padding: 0 6px; }
-    .top { display: flex; justify-content: space-between; gap: 16px; align-items: center; flex-wrap: wrap; }
-    .pill { display: inline-block; padding: 7px 16px; border-radius: 999px; font-size: 12px; font-weight: 800; letter-spacing: 2px;
-      background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.3); }
-    h1 { margin: 10px 0 6px; font-size: clamp(30px, 5vw, 54px); letter-spacing: -2px; color: #fff; text-shadow: 0 10px 30px rgba(0,0,0,.3); }
-    #state { color: rgba(255,255,255,.75); font-size: 14px; }
+    .header-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+    }
+    .brand-badge {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(79, 70, 229, 0.25);
+    }
+    .brand-badge svg { width: 20px; height: 20px; fill: #fff; }
+    .brand-name {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: var(--text-main);
+    }
+    .brand-tag {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      padding: 3px 8px;
+      background: var(--primary-light);
+      border: 1px solid rgba(79, 70, 229, 0.2);
+      color: var(--primary);
+      border-radius: 999px;
+      text-transform: uppercase;
+    }
 
-    main { position: relative; z-index: 2; width: min(1180px, 100%); margin: -30px auto 60px; padding: 0 6px; perspective: 1400px; }
+    .header-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .live-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-muted);
+      background: #f1f5f9;
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--card-border);
+    }
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--success);
+      box-shadow: 0 0 8px var(--success);
+    }
 
-    button { border: 0; border-radius: 16px; padding: 13px 22px; font-weight: 800; cursor: pointer; font-size: 14px;
-      background: linear-gradient(145deg, #5b1fa6, #7c3aed); color: #fff;
-      box-shadow: 0 14px 28px -10px rgba(91,31,166,.55), inset 0 2px 4px rgba(255,255,255,.25); transition: transform .15s ease, box-shadow .15s ease; }
-    button:hover { transform: translateY(-3px); box-shadow: 0 20px 34px -10px rgba(91,31,166,.65); }
-    button:active { transform: translateY(0); }
-    button.alt { background: linear-gradient(145deg, #ff4fb8, #be185d); box-shadow: 0 14px 28px -10px rgba(255,79,184,.5), inset 0 2px 4px rgba(255,255,255,.3); }
-    button.mini { padding: 9px 16px; font-size: 12px; border-radius: 12px; }
-    button.del { background: linear-gradient(145deg, #f43f5e, #be123c); box-shadow: 0 12px 24px -10px rgba(244,63,94,.5); }
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 18px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 4px 12px var(--primary-glow);
+    }
+    .btn-primary:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(79, 70, 229, 0.25);
+    }
+    .btn-secondary {
+      background: #ffffff;
+      color: var(--text-muted);
+      border-color: var(--card-border);
+    }
+    .btn-secondary:hover {
+      background: #f8fafc;
+      color: var(--text-main);
+      border-color: #cbd5e1;
+    }
+    .btn-danger {
+      background: #ffffff;
+      color: var(--danger);
+      border-color: #fecaca;
+    }
+    .btn-danger:hover {
+      background: var(--danger-bg);
+      border-color: var(--danger);
+    }
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 12px;
+      border-radius: 8px;
+    }
 
-    .layout { display: grid; grid-template-columns: 380px 1fr; gap: 22px; align-items: start; }
+    /* Main Container */
+    main {
+      max-width: 1400px;
+      margin: 28px auto 60px;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
     .card {
-      border-radius: 28px; padding: 26px; position: relative; transform-style: preserve-3d; transition: transform .2s ease;
-      background: rgba(255,255,255,.82); backdrop-filter: blur(16px);
-      border: 1px solid rgba(255,255,255,.9);
-      box-shadow: 0 30px 60px -20px rgba(23,27,63,.25), inset 0 1px 0 rgba(255,255,255,1);
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
     }
-    .card h2 { font-size: 19px; margin-bottom: 16px; color: #171b3f; letter-spacing: -.3px; }
-    label { display: block; font-size: 12px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; color: #64748b; margin-top: 14px; }
-    input, select, textarea { width: 100%; padding: 13px 15px; border: 2px solid #e2edf5; border-radius: 14px; margin-top: 7px; font: inherit; font-size: 15px; background: #fff; outline: none; transition: border .15s ease, box-shadow .15s ease; }
-    input:focus, textarea:focus { border-color: #7c3aed; box-shadow: 0 0 0 4px rgba(124,58,237,.12); }
-    textarea { resize: vertical; }
-    .btnrow { display: flex; gap: 10px; margin-top: 20px; }
-    .btnrow button { flex: 1; }
 
-    table { width: 100%; border-collapse: collapse; }
-    th, td { padding: 13px 12px; border-bottom: 1px solid #eef3f9; text-align: left; font-size: 14px; }
-    th { color: #5b1fa6; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; }
-    tbody tr { transition: background .15s ease; }
-    tbody tr:hover { background: rgba(124,58,237,.05); }
-    .finished { color: #e11d48; font-weight: 900; }
-    .avail { color: #059669; font-weight: 700; }
-    .actions { display: flex; gap: 8px; }
+    .card-header {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      color: var(--text-main);
+    }
+    .card-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #f1f5f9;
+      color: var(--text-muted);
+    }
 
-    .modal { display: none; position: fixed; inset: 0; background: rgba(14,10,40,.7); backdrop-filter: blur(8px); place-items: center; padding: 20px; z-index: 50; }
-    .modal.open { display: grid; }
-    .login { width: min(420px, 100%); padding: 32px; border-radius: 28px; background: #fff;
-      box-shadow: 0 40px 90px -20px rgba(14,10,40,.5); }
-    .login h2 { margin-bottom: 6px; }
-    .login .sub { color: #64748b; font-size: 14px; margin-bottom: 10px; }
-    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+    /* Form Styles */
+    .card-body {
+      padding: 22px;
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .form-input, .form-textarea, .form-select {
+      width: 100%;
+      background: #f8fafc;
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      color: var(--text-main);
+      font-size: 14px;
+      outline: none;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+      background: #ffffff;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-glow);
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 22px;
+    }
+    .form-actions button {
+      flex: 1;
+      justify-content: center;
+    }
+
+    /* Quick Category Suggestions */
+    .quick-categories {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+    .cat-btn {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      background: #f1f5f9;
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.15s ease;
+    }
+    .cat-btn:hover {
+      background: var(--primary-light);
+      color: var(--primary);
+      border-color: rgba(79, 70, 229, 0.3);
+    }
+
+    /* Catalog Table */
+    .table-controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .search-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .search-box svg {
+      position: absolute;
+      left: 12px;
+      width: 14px;
+      height: 14px;
+      fill: var(--text-dim);
+      pointer-events: none;
+    }
+    .search-input {
+      background: #f8fafc;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 7px 12px 7px 34px;
+      color: var(--text-main);
+      font-size: 13px;
+      outline: none;
+      width: 200px;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+    .search-input:focus {
+      background: #ffffff;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-glow);
+      width: 260px;
+    }
+
+    .table-responsive {
+      overflow-x: auto;
+      max-height: 640px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+    th {
+      padding: 13px 18px;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--card-border);
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+    td {
+      padding: 14px 18px;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 13px;
+      vertical-align: middle;
+    }
+    tbody tr {
+      transition: background-color 0.15s ease;
+    }
+    tbody tr:hover {
+      background-color: #f8fafc;
+    }
+
+    .item-name-cell {
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    .item-notes {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .category-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid var(--card-border);
+    }
+    .price-cell {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .status-pill.available {
+      background: var(--success-bg);
+      color: var(--success);
+    }
+    .status-pill.out-of-stock {
+      background: var(--danger-bg);
+      color: var(--danger);
+    }
+
+    .action-group {
+      display: flex;
+      gap: 6px;
+    }
+
+    /* Modal Overlay */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .login-dialog {
+      background: #ffffff;
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      width: min(420px, 100%);
+      padding: 32px;
+      box-shadow: var(--shadow-lg);
+      transform: translateY(10px);
+      transition: transform 0.2s ease;
+    }
+    .modal-overlay.open .login-dialog {
+      transform: translateY(0);
+    }
+    .login-dialog h2 {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 6px;
+      letter-spacing: -0.5px;
+    }
+    .login-dialog p {
+      color: var(--text-muted);
+      font-size: 13px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 960px) {
+      main { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
-  <div class="orb orb1"></div><div class="orb orb2"></div>
-
   <header>
-    <div class="wrap top">
-      <div>
-        <span class="pill">SHOP SIDE</span>
-        <h1>Menu Manager</h1>
-        <p id="state">Shop login required on this PC</p>
-      </div>
-      <div style="display:flex; gap:10px;">
-        <button onclick="openLogin()">Shop Login</button>
-        <button class="alt" onclick="logout()">Logout</button>
+    <div class="header-inner">
+      <a href="/" class="brand-group">
+        <div class="brand-badge">
+          <svg viewBox="0 0 24 24"><path d="M20 4H4v2h16V4zm1 10v-2l-1-5H4l-1 5v2h1v6h10v-6h4v6h2v-6h1zm-9 4H6v-4h6v4z"/></svg>
+        </div>
+        <div>
+          <span class="brand-name">SLUSHIFY</span>
+          <span class="brand-tag">Shop Terminal</span>
+        </div>
+      </a>
+
+      <div class="header-meta">
+        <div class="live-status">
+          <div class="live-dot"></div>
+          <span id="state">Connecting...</span>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="openLogin()" id="loginBtn">Shop Login</button>
+        <button class="btn btn-secondary btn-sm" onclick="logout()" id="logoutBtn" style="display:none;">Logout</button>
+        <a href="/owner.html" class="btn btn-primary btn-sm">Owner Suite</a>
       </div>
     </div>
   </header>
 
-  <main class="wrap layout">
+  <main>
+    <!-- Left: Add/Edit Form -->
     <section class="card">
-      <h2 id="formTitle">Add Menu Item</h2>
-      <form onsubmit="event.preventDefault(); saveItem();">
-        <input type="hidden" id="itemId">
-        <label>Item name</label>
-        <input id="name" placeholder="Blue raspberry slush" required>
-        <label>Category (type your own)</label>
-        <input id="category" list="categoryOptions" placeholder="Type category e.g. Slush" autocomplete="off" required>
-        <datalist id="categoryOptions">
-          <option value="Slush"></option>
-          <option value="Smoothie"></option>
-          <option value="Add-on"></option>
-          <option value="Snack"></option>
-          <option value="Other"></option>
-        </datalist>
-        <label>Number of items</label>
-        <input id="quantity" type="number" min="0" value="1" required>
-        <label>Price</label>
-        <input id="price" type="number" min="0" step="0.01" required>
-        <label>Notes</label>
-        <textarea id="notes" rows="3" placeholder="Optional shop notes"></textarea>
-        <div class="btnrow">
-          <button type="submit">Save Item</button>
-          <button class="alt" type="button" onclick="resetForm()">New Item</button>
-        </div>
-      </form>
+      <div class="card-header">
+        <h2 class="card-title" id="formTitle">Add Catalog Item</h2>
+        <span class="card-badge" id="formModeBadge">New Record</span>
+      </div>
+      <div class="card-body">
+        <form onsubmit="event.preventDefault(); saveItem();">
+          <input type="hidden" id="itemId">
+
+          <div class="form-group">
+            <label class="form-label">Item / Flavor Name</label>
+            <input type="text" id="name" class="form-input" placeholder="e.g. Blue Raspberry Slush" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Category</label>
+            <input type="text" id="category" class="form-input" list="categoryOptions" placeholder="Type or pick category..." autocomplete="off" required>
+            <datalist id="categoryOptions">
+              <option value="Slush"></option>
+              <option value="Smoothie"></option>
+              <option value="Topping / Add-on"></option>
+              <option value="Beverage"></option>
+              <option value="Snack"></option>
+            </datalist>
+            <div class="quick-categories">
+              <span class="cat-btn" onclick="setCategory('Slush')">Slush</span>
+              <span class="cat-btn" onclick="setCategory('Smoothie')">Smoothie</span>
+              <span class="cat-btn" onclick="setCategory('Add-on')">Add-on</span>
+              <span class="cat-btn" onclick="setCategory('Beverage')">Beverage</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Quantity</label>
+              <input type="number" id="quantity" class="form-input" min="0" value="10" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Unit Price ($)</label>
+              <input type="number" id="price" class="form-input" min="0" step="0.01" placeholder="4.50" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Internal Shop Notes</label>
+            <textarea id="notes" class="form-textarea" rows="3" placeholder="Batch size, machine settings, supplier info..."></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="submitBtn">Save Catalog Item</button>
+            <button type="button" class="btn btn-secondary" onclick="resetForm()">Clear</button>
+          </div>
+        </form>
+      </div>
     </section>
 
+    <!-- Right: Catalog Table -->
     <section class="card">
-      <h2>Table of Contents</h2>
-      <table>
-        <thead><tr><th>Item name</th><th>Qty</th><th>Price</th><th>Category</th><th>Status</th><th>Action</th></tr></thead>
-        <tbody id="rows"></tbody>
-      </table>
+      <div class="card-header">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <h2 class="card-title">Shop Inventory Catalog</h2>
+          <span class="card-badge" id="catalogCount">0 items</span>
+        </div>
+
+        <div class="table-controls">
+          <div class="search-box">
+            <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            <input type="text" class="search-input" id="tableSearch" placeholder="Search catalog..." oninput="renderTable()">
+          </div>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Item / Notes</th>
+              <th>Category</th>
+              <th>Qty Units</th>
+              <th>Price</th>
+              <th>Status</th>
+              <th style="text-align:right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="rows">
+            <tr><td colspan="6" style="text-align:center; padding:30px; color:#94a3b8;">Loading catalog...</td></tr>
+          </tbody>
+        </table>
+      </div>
     </section>
   </main>
 
-  <div class="modal" id="loginModal">
-    <form class="login" onsubmit="event.preventDefault(); login();">
-      <h2>Shop Login</h2>
-      <p class="sub">For the shop PC only</p>
-      <label>Shop ID</label>
-      <input id="loginId" value="shop1" required>
-      <label>Password</label>
-      <input id="loginPass" type="password" required>
-      <button type="submit" style="width:100%;">Login</button>
-    </form>
+  <!-- Login Modal Dialog -->
+  <div class="modal-overlay" id="loginModal">
+    <div class="login-dialog">
+      <h2>Shop Terminal Login</h2>
+      <p>Authenticate this PC to manage store items and pricing.</p>
+      <form onsubmit="event.preventDefault(); login();">
+        <div class="form-group">
+          <label class="form-label">Operator ID</label>
+          <input type="text" id="loginId" class="form-input" value="shop1" required autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" id="loginPass" class="form-input" required autocomplete="current-password" placeholder="Enter password">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; padding:12px;">Authorize Terminal</button>
+      </form>
+    </div>
   </div>
 
   <script>
     let token = localStorage.getItem('slushifyShopToken') || '';
-    let inventory = [];
+    let rawInventory = [];
+
     const money = value => `$${(Number(value) || 0).toFixed(2)}`;
     const auth = () => ({ 'X-Auth-Token': token });
-    function openLogin() { loginModal.classList.add('open'); }
-    function closeLogin() { loginModal.classList.remove('open'); }
-    function logout() { token = ''; localStorage.removeItem('slushifyShopToken'); window.location.href = '/'; }
+
+    function openLogin() { document.getElementById('loginModal').classList.add('open'); }
+    function closeLogin() { document.getElementById('loginModal').classList.remove('open'); }
+
+    function updateAuthButtons() {
+      if (token) {
+        document.getElementById('loginBtn').style.display = 'none';
+        document.getElementById('logoutBtn').style.display = 'inline-flex';
+      } else {
+        document.getElementById('loginBtn').style.display = 'inline-flex';
+        document.getElementById('logoutBtn').style.display = 'none';
+      }
+    }
+
+    function logout() {
+      token = '';
+      localStorage.removeItem('slushifyShopToken');
+      updateAuthButtons();
+      window.location.href = '/';
+    }
+
+    function setCategory(cat) {
+      document.getElementById('category').value = cat;
+    }
 
     async function login() {
-      const response = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: loginId.value, pass: loginPass.value }) });
+      const id = document.getElementById('loginId').value;
+      const pass = document.getElementById('loginPass').value;
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, pass })
+      });
       const data = await response.json();
-      if (!data.success || data.role !== 'shop') return alert('Shop login failed');
+      if (!data.success || data.role !== 'shop') {
+        alert('Shop authentication rejected.');
+        return;
+      }
       token = data.token;
       localStorage.setItem('slushifyShopToken', token);
       closeLogin();
+      updateAuthButtons();
       loadItems();
     }
 
-    async function loadItems() {
-      if (!token) return openLogin();
-      const response = await fetch('/api/inventory', { headers: auth() });
-      if (response.status === 401) return logout();
-      inventory = await response.json();
-      state.textContent = `Logged in as shop PC. Last update ${new Date().toLocaleTimeString()}`;
-      rows.innerHTML = inventory.map(item => {
+    function renderTable() {
+      const query = (document.getElementById('tableSearch').value || '').toLowerCase().trim();
+      const filtered = rawInventory.filter(item => {
+        const name = (item.name || '').toLowerCase();
+        const cat = (item.category || '').toLowerCase();
+        const notes = (item.notes || '').toLowerCase();
+        return name.includes(query) || cat.includes(query) || notes.includes(query);
+      });
+
+      document.getElementById('catalogCount').textContent = `${filtered.length} items`;
+
+      if (filtered.length === 0) {
+        document.getElementById('rows').innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align: center; color: #94a3b8; padding: 36px;">
+              No matching items found in the shop catalog
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      document.getElementById('rows').innerHTML = filtered.map(item => {
         const qty = Number(item.quantity) || 0;
-        return `<tr><td>${item.name}</td><td>${qty}</td><td>${money(item.price)}</td><td>${item.category}</td><td>${qty <= 0 ? '<span class="finished">Finished</span>' : '<span class="avail">Available</span>'}</td><td><div class="actions"><button class="mini" onclick="editItem('${item.id}')">Edit</button><button class="mini del" onclick="deleteItem('${item.id}')">Delete</button></div></td></tr>`;
-      }).join('') || '<tr><td colspan="6">No menu items yet</td></tr>';
+        const price = Number(item.price) || 0;
+        const isOut = qty <= 0;
+
+        return `
+          <tr>
+            <td>
+              <div class="item-name-cell">${item.name}</div>
+              ${item.notes ? `<div class="item-notes">${item.notes}</div>` : ''}
+            </td>
+            <td><span class="category-badge">${item.category || 'General'}</span></td>
+            <td class="price-cell" style="color: ${isOut ? '#ef4444' : '#0f172a'}; font-weight: 700;">${qty}</td>
+            <td class="price-cell">${money(price)}</td>
+            <td>
+              <span class="status-pill ${isOut ? 'out-of-stock' : 'available'}">
+                ${isOut ? 'Out of Stock' : 'Available'}
+              </span>
+            </td>
+            <td style="text-align: right;">
+              <div class="action-group" style="justify-content: flex-end;">
+                <button class="btn btn-secondary btn-sm" onclick="editItem('${item.id}')">Edit</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteItem('${item.id}')">Delete</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function loadItems() {
+      if (!token) {
+        openLogin();
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/inventory', { headers: auth() });
+        if (response.status === 401) return logout();
+        rawInventory = await response.json();
+        document.getElementById('state').textContent = `LIVE - ${new Date().toLocaleTimeString()}`;
+        renderTable();
+      } catch (err) {
+        document.getElementById('state').textContent = 'OFFLINE';
+      }
     }
 
     async function saveItem() {
       if (!token) return openLogin();
-      const payload = { name: name.value, category: category.value, quantity: Number(quantity.value), price: Number(price.value), notes: notes.value };
-      const id = itemId.value;
-      await fetch(id ? `/api/inventory/${id}` : '/api/inventory', {
+      const payload = {
+        name: document.getElementById('name').value,
+        category: document.getElementById('category').value,
+        quantity: Number(document.getElementById('quantity').value),
+        price: Number(document.getElementById('price').value),
+        notes: document.getElementById('notes').value
+      };
+      const id = document.getElementById('itemId').value;
+      const res = await fetch(id ? `/api/inventory/${id}` : '/api/inventory', {
         method: id ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json', ...auth() },
         body: JSON.stringify(payload)
       });
-      resetForm();
-      loadItems();
+      if (res.ok) {
+        resetForm();
+        loadItems();
+      } else {
+        alert('Failed to save item.');
+      }
     }
 
     function editItem(id) {
-      const item = inventory.find(entry => entry.id === id);
+      const item = rawInventory.find(entry => entry.id === id);
       if (!item) return;
-      formTitle.textContent = ' Edit Menu Item';
-      itemId.value = item.id;
-      name.value = item.name;
-      category.value = item.category;
-      quantity.value = item.quantity;
-      price.value = item.price;
-      notes.value = item.notes || '';
+      document.getElementById('formTitle').textContent = 'Edit Catalog Item';
+      document.getElementById('formModeBadge').textContent = 'Updating ID: ' + id.slice(-4);
+      document.getElementById('submitBtn').textContent = 'Update Item';
+      document.getElementById('itemId').value = item.id;
+      document.getElementById('name').value = item.name;
+      document.getElementById('category').value = item.category;
+      document.getElementById('quantity').value = item.quantity;
+      document.getElementById('price').value = item.price;
+      document.getElementById('notes').value = item.notes || '';
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function deleteItem(id) {
-      if (!confirm('Delete this item from the menu?')) return;
-      fetch(`/api/inventory/${id}`, { method: 'DELETE', headers: { 'X-Auth-Token': token } });
+    async function deleteItem(id) {
+      if (!confirm('Are you sure you want to remove this item from the catalog?')) return;
+      await fetch(`/api/inventory/${id}`, { method: 'DELETE', headers: auth() });
       loadItems();
     }
 
     function resetForm() {
-      formTitle.textContent = 'Add Menu Item';
-      itemId.value = '';
-      name.value = '';
-      category.value = '';
-      quantity.value = 1;
-      price.value = '';
-      notes.value = '';
+      document.getElementById('formTitle').textContent = 'Add Catalog Item';
+      document.getElementById('formModeBadge').textContent = 'New Record';
+      document.getElementById('submitBtn').textContent = 'Save Catalog Item';
+      document.getElementById('itemId').value = '';
+      document.getElementById('name').value = '';
+      document.getElementById('category').value = '';
+      document.getElementById('quantity').value = 10;
+      document.getElementById('price').value = '';
+      document.getElementById('notes').value = '';
     }
 
+    updateAuthButtons();
     setInterval(loadItems, 5000);
     loadItems();
   </script>
