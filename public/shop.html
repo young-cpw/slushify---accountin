@@ -517,7 +517,7 @@
               <input type="number" id="quantity" class="form-input" min="0" value="10" required>
             </div>
             <div class="form-group">
-              <label class="form-label">Unit Price ($)</label>
+              <label class="form-label">Unit Price (GHS)</label>
               <input type="number" id="price" class="form-input" min="0" step="0.01" placeholder="4.50" required>
             </div>
           </div>
@@ -594,7 +594,7 @@
     let token = localStorage.getItem('slushifyShopToken') || '';
     let rawInventory = [];
 
-    const money = value => `$${(Number(value) || 0).toFixed(2)}`;
+    const money = value => `GHS ${(Number(value) || 0).toFixed(2)}`;
     const auth = () => ({ 'X-Auth-Token': token });
 
     function openLogin() { document.getElementById('loginModal').classList.add('open'); }
