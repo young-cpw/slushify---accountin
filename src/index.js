@@ -135,16 +135,15 @@ async function handleAPI(req, res, url) {
 
   if (url.pathname === '/api/accounts' && req.method === 'GET') {
     if (!requireRole(req, res, ['owner'])) return;
-    sendJSON(res, 200, loadJSON(ACCOUNTS_FILE, []));
+    sendJSON(res, 200, loadAccounts());
     return;
   }
 
   if (url.pathname === '/api/accounts' && req.method === 'POST') {
     if (!requireRole(req, res, ['owner'])) return;
-    const accounts = loadJSON(ACCOUNTS_FILE, []);
-    const account = { ...(await readBody(req)), id: Date.now().toString(), createdAt: new Date().toISOString() };
-    accounts.push(account);
-    saveJSON(ACCOUNTS_FILE, accounts);
+    const body = await readBody(req);
+    const account = { ...body, id: Date.now().toString(), createdAt: new Date().toISOString() };
+    saveAccount(account);
     sendJSON(res, 201, account);
     return;
   }
@@ -300,8 +299,18 @@ function start() {
   });
 }
 
+function loadAccounts() {
+  return loadJSON(ACCOUNTS_FILE, []);
+}
+
+function saveAccount(account) {
+  const accounts = loadAccounts();
+  accounts.push(account);
+  saveJSON(ACCOUNTS_FILE, accounts);
+}
+
 if (require.main === module) {
   start();
 }
 
-module.exports = { server, start };
+module.exports = { server, start, loadAccounts, saveAccount };
